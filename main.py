@@ -1,4 +1,5 @@
 import json
+import random
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -8,16 +9,19 @@ import os
 import datetime
 import sys
 import pytest
-
 import requests
 from bs4 import BeautifulSoup
+
+import mysql.connector
+
+from db import insert, read
 
 url = "https://api.telegram.org/bot1114875381:AAEYISRMAfW1ywHdFK0SdqkWNp2j_zfV60c/"
 
 chat = "389494971"
 
 size = 4
-base_url = ("https://www.global.jdsports.com/men/mens-footwear/sale/?max=204&jd_sort_order=price-low-high")
+base_url = ("https://www.global.jdsports.com/men/mens-footwear/brand/adidas-originals,puma,adidas,nike,under-armour,fred-perry,lacoste,new-balance,tommy-hilfiger,emporio-armani-ea7,champion,asics,adidas-skateboarding,vans/sale/?jd_sort_order=price-low-high&max=204&minprice-gbp=0&maxprice-gbp=50")
 driver = webdriver.Chrome("chromedriver")
 
 def quick_resp(responce):
@@ -29,9 +33,7 @@ def quick_resp(responce):
             print( listMessage[index]['message']['text'])
         size = len(listMessage)
 
-    # userMsg = responce['result']['message']['text']
-    # if userMsg == "hello":
-    #     sendMsg(1231,"boy boy, hay bro")
+
 
 def wellcomeSay(userMsg):
     if userMsg == "hi":
@@ -53,33 +55,57 @@ def get_updates_json(url):
     quick_resp(data)
 
 def parse_jd_sports():
-
-
     driver.get(base_url)
     driver.maximize_window()
 
-    driver.save_screenshot("landing_page.png")
-    driver.find_element_by_class_name("closeLightbox").click()
+    #driver.save_screenshot("landing_page.png")
+    # driver.find_element_by_class_name("closeLightbox").click()
 
-    elem = driver.find_element_by_css_selector('#productListMain')
-    list = elem.get_attribute('innerHTML')
-    name = elem.find_element_by_class_name("itemTitle").find_element_by_tag_name("a").get_attribute('innerHTML')
+    elem = driver.find_elements_by_css_selector('.productListItem')
+    links = []
+    for i in elem:
+        link = i.find_element_by_class_name("itemImage").get_attribute('href')
+        links.append(link)
+    # driver.quit()
+    return links
 
-    # oldprice =
-    # price =
-    # link =
-    sendMsg(name)
-    # sendMsg(link)
+def parse_footlocker():
+    driver.get("https://www.jimmyjazz.com/collections/mens-clearance")
+    driver.maximize_window()
 
-    driver.quit()
+    # driver.quit()
+    elem = driver.find_elements_by_css_selector('.grid__item')
+    links = []
+    for i in elem:
+        link = i.find_element_by_css_selector(".grid-product__link").get_attribute('href')
+        links.append(link)
+        print(link)
 
+    return links
 
-
-def send_mess(chat, text):
+def send_mess( text):
     params = {'chat_id': chat, 'text': text}
     response = requests.post(url + 'sendMessage', data=params)
     return response
 
-parse_jd_sports()
+
+def checkLink (old_links, new_links):
+    for i in new_links:
+        isTrue = False
+        for j in old_links:
+            if i == j:
+                isTrue = True
+                break
+        if isTrue == False:
+            sendMsg(i)
+            insert(i)
+    print("заперсено :)")
+
+# parse_footlocker()
+
+while True:
+    checkLink(read(),parse_jd_sports())
+    time.sleep(random.randint(4,11))
+    print("отоспано, идем парсить")
 
 
