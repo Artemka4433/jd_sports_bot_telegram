@@ -21,8 +21,11 @@ url = "https://api.telegram.org/bot1114875381:AAEYISRMAfW1ywHdFK0SdqkWNp2j_zfV60
 chat = "389494971"
 
 size = 4
-base_url = ("https://www.global.jdsports.com/men/mens-footwear/brand/adidas-originals,puma,adidas,nike,under-armour,fred-perry,lacoste,new-balance,tommy-hilfiger,emporio-armani-ea7,champion,asics,adidas-skateboarding,vans/sale/?jd_sort_order=price-low-high&max=204&minprice-gbp=0&maxprice-gbp=50")
-driver = webdriver.Chrome("chromedriver")
+base_url = ("https://www.jdsports.co.uk/men/mens-footwear/sale/?max=72&maxprice-gbp=60.01&minprice-gbp=10&sort=latest")
+chrome_options = webdriver.ChromeOptions()
+chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+# driver = webdriver.Chrome("/app/.chromedriver/bin/chromedriver")
 
 def quick_resp(responce):
     listMessage = responce['result']
