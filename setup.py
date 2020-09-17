@@ -26,7 +26,7 @@ chrome_options = webdriver.ChromeOptions()
 chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
 driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
 # driver = webdriver.Chrome("/app/.chromedriver/bin/chromedriver")
-
+#
 def quick_resp(responce):
     listMessage = responce['result']
     global size
